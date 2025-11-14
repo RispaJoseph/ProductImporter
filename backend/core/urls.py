@@ -15,8 +15,17 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from products.views import ProductViewSet, WebhookViewSet, upload_csv, import_status
+
+router = DefaultRouter()
+router.register(r"products", ProductViewSet, basename="product")
+router.register(r"webhooks", WebhookViewSet, basename="webhook")
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path("api/", include(router.urls)),
+    path("api/upload/", upload_csv, name="upload-csv"),
+    path("api/imports/<int:job_id>/status/", import_status, name="import-status"),
 ]
