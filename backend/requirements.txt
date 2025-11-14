@@ -1,0 +1,12 @@
+Django>=4.2
+djangorestframework
+psycopg2-binary
+celery
+redis
+django-environ
+supabase
+gunicorn
+python-dotenv
+requests
+channels
+channels-redis
