@@ -10,3 +10,4 @@ python-dotenv
 requests
 channels
 channels-redis
+django-cors-headers
