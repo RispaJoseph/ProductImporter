@@ -18,7 +18,12 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from products.views import ProductViewSet, WebhookViewSet, upload_csv, import_status
+from products.views import (
+    ProductViewSet,
+    WebhookViewSet,
+    upload_csv,
+    import_status,
+)
 
 router = DefaultRouter()
 router.register(r"products", ProductViewSet, basename="product")
@@ -30,4 +35,5 @@ urlpatterns = [
     path("api/upload/", upload_csv, name="upload-csv"),
     path("api/imports/<int:job_id>/status/", import_status, name="import-status"),
 ]
+
 

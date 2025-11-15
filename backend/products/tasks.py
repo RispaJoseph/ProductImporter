@@ -131,7 +131,7 @@ def import_csv_task(self, job_id, filepath, chunk_size=5000):
             job.total_rows,
         )
 
-        # Notify webhooks
+        # Notify webhooks asynchronously
         send_webhooks.delay(
             "import.completed",
             {"job_id": job.id, "total": job.total_rows, "processed": job.processed},
@@ -183,14 +183,58 @@ def _bulk_upsert(rows):
 
 @shared_task
 def send_webhooks(event_type, payload):
+    """
+    Send event payload to all enabled webhooks of a given event_type.
+    Runs in Celery so it never blocks the main request/response cycle.
+    """
     webhooks = Webhook.objects.filter(enabled=True, event_type=event_type)
     for wh in webhooks:
         try:
             r = requests.post(wh.url, json=payload, timeout=5)
             wh.last_status = r.status_code
             wh.last_response = (r.text or "")[:1000]
-            wh.save(update_fields=["last_status", "last_response"])
+            # response.elapsed is a timedelta
+            wh.last_response_time_ms = int(r.elapsed.total_seconds() * 1000)
+            wh.save(update_fields=["last_status", "last_response", "last_response_time_ms"])
         except Exception as e:
             wh.last_status = None
             wh.last_response = str(e)[:1000]
-            wh.save(update_fields=["last_status", "last_response"])
+            wh.last_response_time_ms = None
+            wh.save(update_fields=["last_status", "last_response", "last_response_time_ms"])
+
+
+@shared_task
+def test_webhook_task(webhook_id, payload=None):
+    """
+    Trigger a single webhook with a test payload.
+    Used by the /api/webhooks/<id>/test/ endpoint.
+    """
+    try:
+        wh = Webhook.objects.get(id=webhook_id)
+    except Webhook.DoesNotExist:
+        return {"ok": False, "error": "Webhook not found"}
+
+    if payload is None:
+        payload = {
+            "event": "webhook.test",
+            "webhook_id": webhook_id,
+            "timestamp": timezone.now().isoformat(),
+        }
+
+    try:
+        r = requests.post(wh.url, json=payload, timeout=5)
+        wh.last_status = r.status_code
+        wh.last_response = (r.text or "")[:1000]
+        wh.last_response_time_ms = int(r.elapsed.total_seconds() * 1000)
+        wh.save(update_fields=["last_status", "last_response", "last_response_time_ms"])
+        return {
+            "ok": True,
+            "status": r.status_code,
+            "elapsed_ms": wh.last_response_time_ms,
+        }
+    except Exception as e:
+        wh.last_status = None
+        wh.last_response = str(e)[:1000]
+        wh.last_response_time_ms = None
+        wh.save(update_fields=["last_status", "last_response", "last_response_time_ms"])
+        return {"ok": False, "error": str(e)}

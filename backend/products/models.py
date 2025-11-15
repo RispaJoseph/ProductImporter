@@ -1,7 +1,5 @@
 from django.db import models
 
-# Create your models here.
-
 
 class Product(models.Model):
     sku = models.CharField(max_length=128)
@@ -41,13 +39,30 @@ class ImportJob(models.Model):
 
 
 class Webhook(models.Model):
+    EVENT_TYPE_CHOICES = [
+        ("import.completed", "Import completed"),
+        # later: ("product.created", "Product created"), etc.
+    ]
+
+    # Friendly label for the UI
+    name = models.CharField(max_length=128, blank=True, default="")
+
     url = models.URLField()
     enabled = models.BooleanField(default=True)
-    event_type = models.CharField(max_length=64, default="import.completed")
+    event_type = models.CharField(
+        max_length=64,
+        choices=EVENT_TYPE_CHOICES,
+        default="import.completed",
+    )
+
     last_status = models.IntegerField(null=True, blank=True)
     last_response = models.TextField(null=True, blank=True)
+    # time taken by the last request, in milliseconds
+    last_response_time_ms = models.IntegerField(null=True, blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.event_type} -> {self.url}"
-
+        label = self.name or self.url
+        status = "enabled" if self.enabled else "disabled"
+        return f"[{self.event_type}] {label} ({status})"
