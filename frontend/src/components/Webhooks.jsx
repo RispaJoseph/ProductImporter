@@ -220,7 +220,7 @@ export default function Webhooks() {
       <div className="table webhook-table" style={{ marginTop: 10 }}>
         <div className="table-head">
           <div>Name</div>
-          <div>URL</div>
+          {/* <div>URL</div> */}
           <div>Event</div>
           <div>Enabled</div>
           <div>Last test</div>
