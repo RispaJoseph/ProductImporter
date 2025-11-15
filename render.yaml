@@ -1,0 +1,87 @@
+services:
+  - type: web
+    name: product-importer-backend
+    env: python
+    plan: free
+    rootDir: backend
+    buildCommand: |
+      pip install -r requirements.txt
+      python manage.py migrate
+      python manage.py collectstatic --noinput
+    startCommand: gunicorn core.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      # ---- Core Django ----
+      - key: DJANGO_SECRET_KEY
+        sync: false            
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: "product-importer-backend.onrender.com"
+
+      - key: TIME_ZONE
+        value: "Asia/Kolkata"
+
+      # ---- Database (Supabase Postgres) ----
+      
+      - key: DATABASE_URL
+        sync: false
+
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+
+      # ---- CORS ----
+      # e.g. https://your-frontend.netlify.app,https://another-site.com
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false
+
+      # ---- Redis / Celery ----
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: product-importer-redis
+          property: connectionString
+
+  
+  - type: worker
+    name: product-importer-celery
+    env: python
+    plan: free
+    rootDir: backend
+    buildCommand: |
+      pip install -r requirements.txt
+      python manage.py migrate
+    startCommand: celery -A core worker --loglevel=info
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        sync: false
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: "product-importer-backend.onrender.com"
+      - key: TIME_ZONE
+        value: "Asia/Kolkata"
+
+      - key: DATABASE_URL
+        sync: false
+
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false
+
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: product-importer-redis
+          property: connectionString
+
+  # Redis instance
+  - type: redis
+    name: product-importer-redis
+    plan: free
+    ipAllowList: []
