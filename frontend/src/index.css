@@ -1,0 +1,390 @@
+/* ============================================================
+   GLOBAL BASE STYLE
+   (Dark gradient background + clean typography)
+============================================================ */
+
+body {
+    font-family: Inter, system-ui, sans-serif;
+    margin: 0;
+    color: #e6eef8;
+    background: linear-gradient(180deg, #0b1220 0%, #071029 60%);
+}
+
+.app-bg {
+    padding: 48px 20px;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+
+/* ============================================================
+   HERO HEADER
+============================================================ */
+
+.hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.hero-title {
+    font-size: 28px;
+    margin: 0 0 6px;
+    letter-spacing: -0.5px;
+    color: #eaf6ff;
+}
+
+.hero-sub {
+    margin: 0;
+    color: #bcd6ea;
+}
+
+.hero-cta .badge {
+    background: linear-gradient(90deg, #06b6d4, #8b5cf6);
+    color: #041027;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.muted {
+    color: #9bbad0;
+    font-size: 13px;
+}
+
+
+/* ============================================================
+   CARD STYLE
+============================================================ */
+
+.card {
+    background: radial-gradient(1200px 400px at 10% 0%, rgba(255, 255, 255, 0.02), transparent), #0b1220;
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: 0 6px 30px rgba(2, 6, 23, 0.6);
+    color: #e6eef8;
+}
+
+
+/* ============================================================
+   BUTTONS
+============================================================ */
+
+.btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 6px 10px !important;
+    border-radius: 8px;
+    cursor: pointer;
+    color: inherit;
+    font-size: 13px !important;
+    transition: all .18s ease;
+}
+
+.btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.btn.primary {
+    background: linear-gradient(90deg, #06b6d4, #8b5cf6);
+    color: #021024;
+    border: none;
+    box-shadow: 0 6px 24px rgba(139, 92, 246, 0.18);
+}
+
+.btn.danger {
+    background: transparent;
+    border: 1px solid rgba(255, 80, 80, 0.25);
+    color: #ffb3b3;
+}
+
+.btn.danger:hover {
+    background: rgba(255, 80, 80, 0.15);
+    border-color: rgba(255, 80, 80, 0.35);
+}
+
+
+/* ============================================================
+   INPUTS
+============================================================ */
+
+.input {
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    background: transparent;
+    color: inherit;
+}
+
+
+/* ============================================================
+   UPLOAD DROPZONE — COMPACT VERSION
+============================================================ */
+
+.col-upload .card {
+    padding: 10px !important;
+}
+
+.dropzone {
+    border: 2px dashed rgba(255, 255, 255, 0.06);
+    padding: 12px !important;
+    margin-top: 8px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all .18s ease;
+}
+
+.dropzone.dragover {
+    transform: translateY(-3px);
+    border-color: rgba(139, 92, 246, 0.7);
+    box-shadow: 0 8px 24px rgba(43, 18, 87, 0.25);
+}
+
+.drop-inner {
+    display: flex;
+    align-items: center;
+    gap: 10px !important;
+}
+
+.upload-ico {
+    width: 30px !important;
+    height: 30px !important;
+    opacity: 0.9;
+    color: #9be7ff;
+}
+
+.drop-title {
+    font-size: 14px !important;
+    font-weight: 600;
+}
+
+.drop-sub {
+    font-size: 11px !important;
+    color: #9bbad0;
+}
+
+.actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+}
+
+
+/* ============================================================
+   PROGRESS BAR
+============================================================ */
+
+.progress-wrap {
+    margin-top: 12px !important;
+}
+
+.progress-bar {
+    background: rgba(255, 255, 255, 0.03);
+    height: 8px !important;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #06b6d4, #8b5cf6);
+    transition: width 0.35s ease;
+}
+
+
+/* ============================================================
+   PRODUCT TABLE — WITH ACTIONS COLUMN
+============================================================ */
+
+.table {
+    margin-top: 12px;
+    overflow: hidden;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.table-head,
+.table-row {
+    display: grid;
+    grid-template-columns: 160px 1fr 1fr 90px 64px 140px;
+    padding: 10px 12px;
+    gap: 12px;
+    align-items: center;
+}
+
+.table-head {
+    background: rgba(255, 255, 255, 0.02);
+    font-weight: 600;
+    font-size: 13px;
+    color: #d6e8fb;
+}
+
+.table-body {
+    max-height: 360px;
+    overflow: auto;
+    padding: 0;
+}
+
+.table-row {
+    padding: 10px 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.table-row:nth-child(odd) {
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.02), transparent);
+}
+
+.empty {
+    padding: 22px;
+    text-align: center;
+    color: #9bbad0;
+}
+
+.col-desc {
+    color: #cfeffd;
+}
+
+.col-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.table-row .btn {
+    white-space: nowrap;
+}
+
+
+/* ============================================================
+   VERTICAL LAYOUT — Upload on Top, Products Fill Screen
+============================================================ */
+
+.layout-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    min-height: calc(100vh - 96px);
+    padding-bottom: 18px;
+}
+
+.col-upload {
+    flex: 0 0 auto;
+}
+
+.col-products {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.col-products>.card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 14px;
+}
+
+.col-products .table-body {
+    flex: 1 1 auto;
+    max-height: none;
+    overflow: auto;
+    padding-bottom: 6px;
+}
+
+.col-products .pager {
+    margin-top: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+/* ============================================================
+   FOOTER
+============================================================ */
+
+.foot {
+    margin-top: 18px;
+    text-align: center;
+    color: #8fb6d2;
+    font-size: 13px;
+}
+
+
+/* ============================================================
+   MODAL (Edit + Delete Dialog)
+============================================================ */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 23, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1200;
+}
+
+.modal {
+    background: #071026;
+    border-radius: 10px;
+    width: 720px;
+    max-width: 95%;
+    box-shadow: 0 8px 40px rgba(2, 6, 23, 0.6);
+    overflow: hidden;
+}
+
+
+/* ============================================================
+   RESPONSIVE BREAKPOINTS
+============================================================ */
+
+@media (max-width: 980px) {
+    .container {
+        padding: 18px;
+    }
+    .hero {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .col-products {
+        min-height: 420px;
+    }
+}
+
+@media (max-width: 760px) {
+    .table-head {
+        display: none;
+    }
+    .table-row {
+        display: block;
+        padding: 12px;
+    }
+    .table-row>div {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0;
+    }
+    .col-desc {
+        display: block;
+        margin-top: 6px;
+    }
+    .col-actions {
+        margin-top: 8px;
+        justify-content: flex-start;
+    }
+}
+
+
+/* Center upload card on desktop */
+
+.col-upload .card {
+    max-width: 900px;
+    margin: 0 auto;
+}
