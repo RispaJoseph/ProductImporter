@@ -335,7 +335,7 @@ export default function Webhooks() {
                 />
               </label>
 
-              <label>
+              {/* <label>
                 <div className="muted">URL</div>
                 <input
                   className="input"
@@ -344,7 +344,7 @@ export default function Webhooks() {
                   onChange={(e) => handleChange("url", e.target.value)}
                   placeholder="https://example.com/webhook"
                 />
-              </label>
+              </label> */}
 
               <label>
                 <div className="muted">Event</div>
