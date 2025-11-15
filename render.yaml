@@ -1,4 +1,5 @@
 services:
+  # 🌐 Django Backend (Web)
   - type: web
     name: product-importer-backend
     env: python
@@ -12,38 +13,34 @@ services:
     envVars:
       # ---- Core Django ----
       - key: DJANGO_SECRET_KEY
-        sync: false            
+        sync: false              # set in Render dashboard
       - key: DEBUG
         value: "False"
       - key: ALLOWED_HOSTS
         value: "product-importer-backend.onrender.com"
-
       - key: TIME_ZONE
         value: "Asia/Kolkata"
 
       # ---- Database (Supabase Postgres) ----
-      
       - key: DATABASE_URL
-        sync: false
+        sync: false              # paste Supabase Postgres URL
 
+      # ---- Supabase client (if used) ----
       - key: SUPABASE_URL
         sync: false
       - key: SUPABASE_KEY
         sync: false
 
       # ---- CORS ----
-      # e.g. https://your-frontend.netlify.app,https://another-site.com
+      # e.g. https://your-frontend.netlify.app,https://other.site.com
       - key: CORS_ALLOWED_ORIGINS
         sync: false
 
       # ---- Redis / Celery ----
       - key: REDIS_URL
-        fromService:
-          type: redis
-          name: product-importer-redis
-          property: connectionString
+        sync: false              # paste Redis connection string from existing Redis
 
-  
+  # 🏗 Celery Worker
   - type: worker
     name: product-importer-celery
     env: python
@@ -75,13 +72,4 @@ services:
         sync: false
 
       - key: REDIS_URL
-        fromService:
-          type: redis
-          name: product-importer-redis
-          property: connectionString
-
-  # Redis instance
-  - type: redis
-    name: product-importer-redis
-    plan: free
-    ipAllowList: []
+        sync: false              # same value as web service
