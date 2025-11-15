@@ -220,7 +220,7 @@ export default function Webhooks() {
       <div className="table webhook-table" style={{ marginTop: 10 }}>
         <div className="table-head">
           <div>Name</div>
-          {/* <div>URL</div> */}
+          <div>URL</div>
           <div>Event</div>
           <div>Enabled</div>
           <div>Last test</div>
@@ -335,7 +335,7 @@ export default function Webhooks() {
                 />
               </label>
 
-              {/* <label>
+              <label>
                 <div className="muted">URL</div>
                 <input
                   className="input"
@@ -344,7 +344,7 @@ export default function Webhooks() {
                   onChange={(e) => handleChange("url", e.target.value)}
                   placeholder="https://example.com/webhook"
                 />
-              </label> */}
+              </label>
 
               <label>
                 <div className="muted">Event</div>
