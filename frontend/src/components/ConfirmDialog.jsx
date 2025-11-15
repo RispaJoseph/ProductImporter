@@ -10,6 +10,7 @@ import React from "react";
  * - cancelLabel: string (optional) default "Cancel"
  * - onConfirm: () => void
  * - onCancel: () => void
+ * - loading?: boolean (optional) - disables buttons & shows "Deleting..."
  */
 
 export default function ConfirmDialog({
@@ -20,13 +21,21 @@ export default function ConfirmDialog({
   cancelLabel = "Cancel",
   onConfirm,
   onCancel,
+  loading = false,
 }) {
   if (!open) return null;
 
   return (
     <div style={overlayStyle}>
       <div style={dialogStyle}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 12,
+          }}
+        >
           <h3 style={{ margin: 0 }}>{title}</h3>
         </div>
 
@@ -35,8 +44,16 @@ export default function ConfirmDialog({
         </div>
 
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
-          <button className="btn" onClick={onCancel}>{cancelLabel}</button>
-          <button className="btn danger" onClick={onConfirm}>{confirmLabel}</button>
+          <button className="btn" onClick={onCancel} disabled={loading}>
+            {cancelLabel}
+          </button>
+          <button
+            className="btn danger"
+            onClick={onConfirm}
+            disabled={loading}
+          >
+            {loading ? "Deleting..." : confirmLabel}
+          </button>
         </div>
       </div>
     </div>

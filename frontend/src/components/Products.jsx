@@ -3,15 +3,16 @@ import ProductForm from "./ProductForm";
 import ConfirmDialog from "./ConfirmDialog";
 
 /**
- * Cleaned final Products.jsx
- * - Removes unused `products` state (uses visibleProducts only)
- * - Debounced global search
- * - Server query params sent (q, sku, name, active, page)
- * - Client-side fallback filtering on page results
- * - Create / Edit modal (ProductForm) + Confirm delete modal (ConfirmDialog)
+ * Products
+ * - View, filter, paginate
+ * - Create / Edit via ProductForm modal
+ * - Single delete via ConfirmDialog
+ * - Bulk delete ALL products via ConfirmDialog
  *
  * Adjust endpoint paths/response parsing if your backend uses different names.
  */
+
+const BULK_DELETE_URL = "/api/products/bulk-delete/"; // change if your backend uses another path
 
 export default function Products() {
   const [visibleProducts, setVisibleProducts] = useState([]); // rendered list (after client-side filtering)
@@ -24,13 +25,17 @@ export default function Products() {
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState(null);
 
-  // modal states
+  // edit/create modal
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState(null);
 
-  // delete confirm modal state
+  // single delete confirm modal
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
+
+  // bulk delete confirm modal
+  const [bulkConfirmOpen, setBulkConfirmOpen] = useState(false);
+  const [bulkDeleting, setBulkDeleting] = useState(false);
 
   const PAGE_SIZE = 25;
   const searchDebounceRef = useRef(null);
@@ -71,7 +76,12 @@ export default function Products() {
       setCount(serverCount);
 
       // Apply client-side fallback filters on returned page results
-      const filtered = applyClientSideFilters(pageResults, { q, skuFilter, nameFilter, activeFilter });
+      const filtered = applyClientSideFilters(pageResults, {
+        q,
+        skuFilter,
+        nameFilter,
+        activeFilter,
+      });
       setVisibleProducts(filtered);
     } catch (err) {
       console.error(err);
@@ -140,7 +150,7 @@ export default function Products() {
     }
   };
 
-  // Delete flow: open confirm dialog then perform delete
+  // Single delete flow: open confirm dialog then perform delete
   const requestDelete = (product) => {
     setDeleteTarget(product);
     setConfirmOpen(true);
@@ -176,6 +186,37 @@ export default function Products() {
     }
   };
 
+  // BULK delete flow
+  const requestBulkDelete = () => {
+    if (!count) return; // nothing to delete
+    setBulkConfirmOpen(true);
+  };
+
+  const performBulkDelete = async () => {
+    setBulkDeleting(true);
+    try {
+      const res = await fetch(BULK_DELETE_URL, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      });
+      if (res.status === 204 || res.ok) {
+        setMsg({ type: "success", text: "All products deleted." });
+        setVisibleProducts([]);
+        setCount(0);
+        setPage(1);
+      } else {
+        const text = await res.text();
+        throw new Error(`Bulk delete failed (${res.status}): ${text}`);
+      }
+    } catch (err) {
+      console.error(err);
+      setMsg({ type: "error", text: "Bulk delete failed. See console." });
+    } finally {
+      setBulkDeleting(false);
+      setBulkConfirmOpen(false);
+    }
+  };
+
   const clearFilters = () => {
     setQ("");
     setSkuFilter("");
@@ -184,15 +225,21 @@ export default function Products() {
     setPage(1);
   };
 
-  const totalPages = Math.max(1, Math.ceil((typeof count === "number" ? count : visibleProducts.length) / PAGE_SIZE));
+  const totalPages = Math.max(
+    1,
+    Math.ceil((typeof count === "number" ? count : visibleProducts.length) / PAGE_SIZE)
+  );
 
   return (
     <div className="card" style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+      {/* Top toolbar */}
       <div className="flex-between" style={{ marginBottom: 8 }}>
         <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
           <h3 className="title-sm">Products</h3>
           <div style={{ display: "flex", gap: 8 }}>
-            <button className="btn" onClick={onCreate}>+ New</button>
+            <button className="btn" onClick={onCreate} disabled={bulkDeleting}>
+              + New
+            </button>
             <button
               className="btn"
               onClick={() => {
@@ -200,8 +247,18 @@ export default function Products() {
                 fetchProducts();
               }}
               title="Refresh"
+              disabled={bulkDeleting}
             >
               Refresh
+            </button>
+            {/* Bulk delete button */}
+            <button
+              className="btn danger"
+              onClick={requestBulkDelete}
+              disabled={bulkDeleting || !count}
+              title="Delete all products"
+            >
+              {bulkDeleting ? "Deleting all..." : "Delete All"}
             </button>
           </div>
         </div>
@@ -211,37 +268,57 @@ export default function Products() {
             className="input"
             placeholder="Global search (sku, name, description)"
             value={q}
-            onChange={(e) => { setQ(e.target.value); setPage(1); }}
+            onChange={(e) => {
+              setQ(e.target.value);
+              setPage(1);
+            }}
             style={{ minWidth: 260 }}
+            disabled={bulkDeleting}
           />
           <select
             className="input"
             value={activeFilter}
-            onChange={(e) => { setActiveFilter(e.target.value); setPage(1); }}
+            onChange={(e) => {
+              setActiveFilter(e.target.value);
+              setPage(1);
+            }}
+            disabled={bulkDeleting}
           >
             <option value="">All</option>
             <option value="true">Active</option>
             <option value="false">Inactive</option>
           </select>
-          <button className="btn" onClick={clearFilters}>Clear</button>
+          <button className="btn" onClick={clearFilters} disabled={bulkDeleting}>
+            Clear
+          </button>
         </div>
       </div>
 
+      {/* Filter row */}
       <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
         <input
           className="input"
           placeholder="Filter by SKU"
           value={skuFilter}
-          onChange={(e) => { setSkuFilter(e.target.value); setPage(1); }}
+          onChange={(e) => {
+            setSkuFilter(e.target.value);
+            setPage(1);
+          }}
+          disabled={bulkDeleting}
         />
         <input
           className="input"
           placeholder="Filter by Name"
           value={nameFilter}
-          onChange={(e) => { setNameFilter(e.target.value); setPage(1); }}
+          onChange={(e) => {
+            setNameFilter(e.target.value);
+            setPage(1);
+          }}
+          disabled={bulkDeleting}
         />
       </div>
 
+      {/* Table */}
       <div className="table" style={{ flex: 1, display: "flex", flexDirection: "column" }}>
         <div className="table-head">
           <div>SKU</div>
@@ -256,53 +333,112 @@ export default function Products() {
           {loading && <div className="empty">Loading…</div>}
 
           {!loading && visibleProducts.length === 0 && (
-            <div className="empty">No products found. Try changing filters or clearing them.</div>
+            <div className="empty">
+              {count === 0 ? "No products available." : "No products match the current filters."}
+            </div>
           )}
 
           {visibleProducts.map((p) => (
-            <div key={p.id || p.sku} className="table-row" style={{ alignItems: "center" }}>
+            <div
+              key={p.id || p.sku}
+              className="table-row"
+              style={{ alignItems: "center", opacity: bulkDeleting ? 0.5 : 1 }}
+            >
               <div style={{ fontWeight: 600 }}>{p.sku}</div>
               <div style={{ fontWeight: 600 }}>{p.name}</div>
-              <div className="col-desc" style={{ color: "#cfeffd" }}>{p.description}</div>
+              <div className="col-desc" style={{ color: "#cfeffd" }}>
+                {p.description}
+              </div>
               <div className="col-price">{p.price ? `₹${p.price}` : "-"}</div>
               <div className="col-active">{p.active ? "Yes" : "No"}</div>
               <div className="col-actions" style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
-                <button className="btn" onClick={() => onEdit(p)}>Edit</button>
-                <button className="btn" onClick={() => requestDelete(p)}>Delete</button>
+                <button
+                  className="btn"
+                  onClick={() => onEdit(p)}
+                  disabled={bulkDeleting}
+                >
+                  Edit
+                </button>
+                <button
+                  className="btn"
+                  onClick={() => requestDelete(p)}
+                  disabled={bulkDeleting}
+                >
+                  Delete
+                </button>
               </div>
             </div>
           ))}
         </div>
       </div>
 
+      {/* Pager */}
       <div className="pager" style={{ marginTop: 12 }}>
         <div style={{ display: "flex", gap: 8 }}>
-          <button className="btn" onClick={() => setPage(x => Math.max(1, x - 1))} disabled={page <= 1}>Prev</button>
-          <button className="btn" onClick={() => setPage(x => Math.min(totalPages, x + 1))} disabled={page >= totalPages}>Next</button>
+          <button
+            className="btn"
+            onClick={() => setPage((x) => Math.max(1, x - 1))}
+            disabled={page <= 1 || bulkDeleting}
+          >
+            Prev
+          </button>
+          <button
+            className="btn"
+            onClick={() => setPage((x) => Math.min(totalPages, x + 1))}
+            disabled={page >= totalPages || bulkDeleting}
+          >
+            Next
+          </button>
         </div>
-        <div className="muted">Page {page} / {totalPages} • {count} items</div>
+        <div className="muted">
+          Page {page} / {totalPages} • {count} items
+        </div>
       </div>
 
+      {/* Status note */}
       {msg && <div style={{ marginTop: 10 }} className="note">{msg.text}</div>}
 
       {/* Edit / Create modal */}
       {formOpen && (
         <div className="modal-overlay" style={modalOverlayStyle}>
           <div className="modal" style={modalStyle}>
-            <ProductForm initial={editing} onCancel={() => setFormOpen(false)} onSave={onSave} />
+            <ProductForm
+              initial={editing}
+              onCancel={() => setFormOpen(false)}
+              onSave={onSave}
+            />
           </div>
         </div>
       )}
 
-      {/* Confirm delete modal */}
+      {/* Confirm delete modal (single product) */}
       <ConfirmDialog
         open={confirmOpen}
         title="Delete product"
-        message={deleteTarget ? `Are you sure you want to delete "${deleteTarget.name || deleteTarget.sku}"? This action cannot be undone.` : "Are you sure?"}
+        message={
+          deleteTarget
+            ? `Are you sure you want to delete "${deleteTarget.name || deleteTarget.sku}"? This action cannot be undone.`
+            : "Are you sure?"
+        }
         confirmLabel="Delete"
         cancelLabel="Cancel"
         onConfirm={performDelete}
-        onCancel={() => { setConfirmOpen(false); setDeleteTarget(null); }}
+        onCancel={() => {
+          setConfirmOpen(false);
+          setDeleteTarget(null);
+        }}
+      />
+
+      {/* Confirm BULK delete modal */}
+      <ConfirmDialog
+        open={bulkConfirmOpen}
+        title="Delete ALL products"
+        message="Are you sure you want to delete ALL products? This action cannot be undone."
+        confirmLabel="Delete All"
+        cancelLabel="Cancel"
+        loading={bulkDeleting}
+        onConfirm={performBulkDelete}
+        onCancel={() => setBulkConfirmOpen(false)}
       />
     </div>
   );

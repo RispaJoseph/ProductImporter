@@ -72,6 +72,15 @@ body {
 }
 
 
+/* compact card for upload */
+
+.upload-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+
 /* ============================================================
    BUTTONS
 ============================================================ */
@@ -127,14 +136,22 @@ body {
    UPLOAD DROPZONE — COMPACT VERSION
 ============================================================ */
 
+
+/* Upload column card: full width, less padding/height */
+
 .col-upload .card {
-    padding: 10px !important;
+    padding: 10px 14px !important;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
 }
 
 .dropzone {
     border: 2px dashed rgba(255, 255, 255, 0.06);
-    padding: 12px !important;
-    margin-top: 8px;
+    padding: 8px 10px !important;
+    /* reduced from 12px */
+    margin-top: 6px;
+    /* slightly tighter */
     border-radius: 10px;
     cursor: pointer;
     transition: all .18s ease;
@@ -170,7 +187,8 @@ body {
 }
 
 .actions {
-    margin-top: 10px;
+    margin-top: 8px;
+    /* reduced from 10px */
     display: flex;
     gap: 8px;
 }
@@ -181,7 +199,8 @@ body {
 ============================================================ */
 
 .progress-wrap {
-    margin-top: 12px !important;
+    margin-top: 8px !important;
+    /* reduced from 12px */
 }
 
 .progress-bar {
@@ -268,7 +287,8 @@ body {
 .layout-vertical {
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 14px;
+    /* slightly smaller gap */
     min-height: calc(100vh - 96px);
     padding-bottom: 18px;
 }
@@ -382,9 +402,38 @@ body {
 }
 
 
-/* Center upload card on desktop */
+/* (Optional shared max-width if you ever need it) */
 
-.col-upload .card {
-    max-width: 900px;
-    margin: 0 auto;
+.products-card,
+.upload-card {
+    /* max-width: 1200px;
+       margin: 0 auto; */
+}
+
+
+/* =======================
+   Webhooks table tweaks
+   ======================= */
+
+.webhooks-card .table-body {
+    max-height: 220px;
+    /* a bit shorter than products */
+}
+
+
+/* Custom column widths for webhooks (6 columns) */
+
+.webhooks-card .table-head,
+.webhooks-card .table-row {
+    grid-template-columns: 140px minmax(0, 2.5fr) 150px 100px 140px 120px;
+}
+
+
+/* URL cell: single-line with ellipsis instead of vertical wrapping */
+
+.webhook-url-cell {
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
