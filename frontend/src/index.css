@@ -15,7 +15,7 @@ body {
 }
 
 .container {
-    max-width: 1100px;
+    max-width: 1200px;
     margin: 0 auto;
 }
 
@@ -64,15 +64,12 @@ body {
 ============================================================ */
 
 .card {
-    background: radial-gradient(1200px 400px at 10% 0%, rgba(255, 255, 255, 0.02), transparent), #0b1220;
+    background: radial-gradient( 1200px 400px at 10% 0%, rgba(255, 255, 255, 0.02), transparent), #0b1220;
     border-radius: 12px;
     padding: 18px;
     box-shadow: 0 6px 30px rgba(2, 6, 23, 0.6);
     color: #e6eef8;
 }
-
-
-/* compact card for upload */
 
 .upload-card {
     display: flex;
@@ -93,7 +90,7 @@ body {
     cursor: pointer;
     color: inherit;
     font-size: 13px !important;
-    transition: all .18s ease;
+    transition: all 0.18s ease;
 }
 
 .btn:hover {
@@ -140,7 +137,7 @@ body {
 /* Upload column card: full width, less padding/height */
 
 .col-upload .card {
-    padding: 10px 14px !important;
+    padding: 8px 12px !important;
     width: 100%;
     max-width: 100%;
     margin: 0;
@@ -148,13 +145,11 @@ body {
 
 .dropzone {
     border: 2px dashed rgba(255, 255, 255, 0.06);
-    padding: 8px 10px !important;
-    /* reduced from 12px */
-    margin-top: 6px;
-    /* slightly tighter */
+    padding: 6px 8px !important;
+    margin-top: 4px;
     border-radius: 10px;
     cursor: pointer;
-    transition: all .18s ease;
+    transition: all 0.18s ease;
 }
 
 .dropzone.dragover {
@@ -186,11 +181,64 @@ body {
     color: #9bbad0;
 }
 
+
+/* Row for dropzone + Start Import (Choose CSV 80% / button 20%) */
+
+.upload-main-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 6px;
+    align-items: stretch;
+}
+
+
+/* 80% width for dropzone */
+
+.upload-main-row .dropzone {
+    flex: 1 1 auto;
+    min-width: 0;
+    /* prevents overflow */
+}
+
+
+/* 20% width for Start Import */
+
+.upload-actions {
+    flex: 0 0 18%;
+    display: flex;
+    align-items: stretch;
+}
+
+
+/* Make ONLY the Start Import button a bit smaller & nicely aligned */
+
+.upload-actions .btn.primary {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 8px !important;
+    font-size: 12px !important;
+    border-radius: 6px;
+}
+
 .actions {
-    margin-top: 8px;
-    /* reduced from 10px */
+    margin-top: 6px;
     display: flex;
     gap: 8px;
+}
+
+
+/* Stack upload row on very small screens */
+
+@media (max-width: 640px) {
+    .upload-main-row {
+        flex-direction: column;
+    }
+    .upload-main-row .dropzone,
+    .upload-actions {
+        flex: 0 0 auto;
+    }
 }
 
 
@@ -199,8 +247,7 @@ body {
 ============================================================ */
 
 .progress-wrap {
-    margin-top: 8px !important;
-    /* reduced from 12px */
+    margin-top: 6px !important;
 }
 
 .progress-bar {
@@ -288,7 +335,6 @@ body {
     display: flex;
     flex-direction: column;
     gap: 14px;
-    /* slightly smaller gap */
     min-height: calc(100vh - 96px);
     padding-bottom: 18px;
 }
@@ -407,25 +453,71 @@ body {
 .products-card,
 .upload-card {
     /* max-width: 1200px;
-       margin: 0 auto; */
+     margin: 0 auto; */
 }
 
 
-/* =======================
-   Webhooks table tweaks
-   ======================= */
+/* ============================================================
+   WEBHOOKS TABLE TWEAKS
+============================================================ */
+
+.col-webhooks {
+    flex: 0 0 auto;
+}
+
+
+/* Webhooks use same base .table classes, but with their own column widths */
 
 .webhooks-card .table-body {
-    max-height: 220px;
+    max-height: 260px;
     /* a bit shorter than products */
 }
 
 
-/* Custom column widths for webhooks (6 columns) */
+/* Align columns so cells sit under their headings neatly */
 
 .webhooks-card .table-head,
 .webhooks-card .table-row {
-    grid-template-columns: 140px minmax(0, 2.5fr) 150px 100px 140px 120px;
+    grid-template-columns: 160px/* Name */
+    90px/* URL (View button) */
+    minmax(0, 1.6fr)/* Event text */
+    80px/* Enabled checkbox */
+    160px/* Last test */
+    170px;
+    /* Actions buttons */
+    padding: 12px 18px;
+    gap: 16px;
+    align-items: center;
+}
+
+
+/* Slightly taller rows */
+
+.webhooks-card .table-row {
+    min-height: 44px;
+}
+
+
+/* Make each cell contents vertically centered */
+
+.webhooks-card .table-row>div {
+    display: flex;
+    align-items: center;
+}
+
+
+/* Center the checkbox in its column */
+
+.webhooks-card input[type="checkbox"] {
+    margin: 0 auto;
+}
+
+
+/* Actions aligned closer to header, not stuck to far right */
+
+.webhooks-card .col-actions {
+    justify-content: flex-start;
+    gap: 6px;
 }
 
 
@@ -436,4 +528,13 @@ body {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+
+/* Make all top-level sections span full container width */
+
+.col-upload,
+.col-webhooks,
+.col-products {
+    width: 100%;
 }

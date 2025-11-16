@@ -21,6 +21,9 @@ export default function Webhooks() {
 
   const [error, setError] = useState("");
 
+  const [viewUrl, setViewUrl] = useState(null);
+
+
   // --------------------------------------------------
   // helpers
   // --------------------------------------------------
@@ -32,6 +35,7 @@ export default function Webhooks() {
 
       // ✅ handle both paginated ({results: []}) and plain array responses
       const rows = Array.isArray(data) ? data : data.results || [];
+      console.log("WEBHOOK ROWS:", rows);
       setItems(rows);
     } catch (e) {
       console.error(e);
@@ -199,9 +203,9 @@ export default function Webhooks() {
           <h2 className="title" style={{ margin: 0, fontSize: 18 }}>
             Webhooks
           </h2>
-          <p className="muted" style={{ marginTop: 4 }}>
+          {/* <p className="muted" style={{ marginTop: 4 }}>
             Configure callbacks for product and import events.
-          </p>
+          </p> */}
         </div>
         <button className="btn primary" type="button" onClick={openNewModal}>
           + Add Webhook
@@ -238,9 +242,28 @@ export default function Webhooks() {
                 <div>{wh.name || "—"}</div>
 
                 {/* URL */}
-                <div className="webhook-url-cell">
+                {/* <div className="webhook-url-cell">
                   {wh.url}
+                </div> */}
+
+                <div className="webhook-url-cell" style={{ display: "flex", gap: "6px" }}>
+                  <button
+                    className="btn"
+                    type="button"
+                    onClick={() => setViewUrl(wh.url)}
+                  >
+                    View
+                  </button>
+
+                  {/* <button
+                    className="btn"
+                    type="button"
+                    onClick={() => navigator.clipboard.writeText(wh.url)}
+                  >
+                    Copy
+                  </button> */}
                 </div>
+
 
                 {/* Event */}
                 <div>{wh.event_type}</div>
@@ -260,7 +283,7 @@ export default function Webhooks() {
                       checked={!!wh.enabled}
                       onChange={() => toggleEnabled(wh)}
                     />
-                    Enabled
+                    {/* Enabled */}
                   </label>
                 </div>
 
@@ -371,6 +394,7 @@ export default function Webhooks() {
                   onChange={(e) => handleChange("enabled", e.target.checked)}
                 />
                 <span className="muted">Enabled</span>
+                
               </label>
 
               {error && (
@@ -445,6 +469,51 @@ export default function Webhooks() {
           </div>
         </div>
       )}
+
+      {viewUrl && (
+        <div className="modal-overlay">
+          <div className="modal" style={{ maxWidth: "600px" }}>
+            <div style={{ padding: 16 }}>
+              <h3 style={{ margin: 0 }}>Webhook URL</h3>
+            </div>
+
+            <div
+              style={{
+                padding: 16,
+                borderTop: "1px solid rgba(255,255,255,0.06)",
+                borderBottom: "1px solid rgba(255,255,255,0.06)"
+              }}
+            >
+              <code style={{ wordBreak: "break-all", fontSize: 14 }}>
+                {viewUrl}
+              </code>
+            </div>
+
+            <div
+              style={{
+                padding: 12,
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: 8,
+              }}
+            >
+              <button
+                className="btn"
+                onClick={() => {
+                  navigator.clipboard.writeText(viewUrl);
+                }}
+              >
+                Copy URL
+              </button>
+
+              <button className="btn primary" onClick={() => setViewUrl(null)}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

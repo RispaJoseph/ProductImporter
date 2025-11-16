@@ -178,7 +178,10 @@ export default function Upload() {
     <div className="card upload-card full-width">
       <div className="flex-between">
         <div>
-          <h2 className="title">Upload Products CSV</h2>
+          {/* <h2 className="title">Upload Products CSV</h2> */}
+          <h2 className="title" style={{ margin: 0, fontSize: 18 }}>
+            Upload Products CSV
+          </h2>
           {/* <p className="muted">
             Up to 500,000 rows. SKU uniqueness enforced (case-insensitive).
           </p> */}
@@ -190,7 +193,7 @@ export default function Upload() {
         </div> */}
       </div>
 
-      <div
+      {/* <div
         className={`dropzone ${dragOver ? "dragover" : ""}`}
         onDragOver={(e) => {
           e.preventDefault();
@@ -231,7 +234,58 @@ export default function Upload() {
         <button type="button" className="btn btn-accent" onClick={uploadFile}>
           Start Import
         </button>
+      </div> */}
+
+            {/* Row: dropzone (80%) + Start Import (20%) */}
+      <div className="upload-main-row">
+        <div
+          className={`dropzone ${dragOver ? "dragover" : ""}`}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setDragOver(true);
+          }}
+          onDragLeave={(e) => {
+            e.preventDefault();
+            setDragOver(false);
+          }}
+          onDrop={onDrop}
+        >
+          <input
+            ref={fileRef}
+            type="file"
+            accept=".csv"
+            style={{ display: "none" }}
+            onChange={handleFileChange}
+          />
+
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => fileRef.current && fileRef.current.click()}
+          >
+            {selectedFileName ? "Change CSV" : "Choose CSV"}
+          </button>
+
+          <span className="muted">
+            {selectedFileName
+              ? `Selected: ${selectedFileName}${
+                  selectedFileSize ? ` (${humanBytes(selectedFileSize)})` : ""
+                }`
+              : "     or drag & drop here"}
+          </span>
+        </div>
+
+        <div className="upload-actions">
+          <button
+            type="button"
+            className="btn primary"
+            onClick={uploadFile}
+          >
+            Start Import
+          </button>
+        </div>
       </div>
+
 
       <div className="progress-wrap" aria-hidden={progress === 0}>
         <div
